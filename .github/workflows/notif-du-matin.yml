@@ -1,0 +1,60 @@
+name: Notif du matin
+
+on:
+  schedule:
+    # 6h45 UTC = 7h45 à Paris en décembre. GitHub peut avoir quelques minutes de retard,
+    # donc la notif arrive en général vers 8h.
+    - cron: "45 6 1-24 12 *"
+  workflow_dispatch:
+    inputs:
+      jour:
+        description: "Numéro de la case à envoyer (pour tester : 1 à 24)"
+        required: true
+        default: "1"
+
+jobs:
+  envoyer:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Envoyer la notification ntfy
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          JOUR_MANUEL: ${{ github.event.inputs.jour }}
+        run: |
+          set -euo pipefail
+          if [ -z "${NTFY_TOPIC:-}" ]; then echo "Secret NTFY_TOPIC manquant"; exit 1; fi
+
+          # Adresse du site : variable SITE_URL, sinon l'adresse GitHub Pages du dépôt
+          if [ -z "${SITE_URL:-}" ]; then
+            OWNER=$(echo "${GITHUB_REPOSITORY%%/*}" | tr '[:upper:]' '[:lower:]')
+            SITE_URL="https://${OWNER}.github.io/${GITHUB_REPOSITORY#*/}"
+          fi
+          SITE_URL="${SITE_URL%/}"
+
+          if [ -n "${JOUR_MANUEL:-}" ]; then
+            JOUR="$JOUR_MANUEL"
+          else
+            MOIS=$(TZ=Europe/Paris date +%-m); JOUR=$(TZ=Europe/Paris date +%-d)
+            if [ "$MOIS" != "12" ] || [ "$JOUR" -gt 24 ]; then echo "Pas de case aujourd'hui"; exit 0; fi
+          fi
+
+          TITRES=(
+            "🎁 Case n°%s : ton petit mot t'attend"
+            "💌 Psst… la case n°%s vient de s'ouvrir"
+            "✨ Bonjour toi ! Case n°%s"
+            "🎄 Un nouveau mot rien que pour toi (case n°%s)"
+          )
+          if [ "$JOUR" = "24" ]; then
+            TITRE="⭐ Case n°24 : c'est le grand jour !"
+          else
+            TITRE=$(printf "${TITRES[$(( JOUR % ${#TITRES[@]} ))]}" "$JOUR")
+          fi
+          IMG=$(printf "%s/notif/jour-%02d.jpg" "$SITE_URL" "$JOUR")
+
+          jq -n --arg topic "$NTFY_TOPIC" --arg title "$TITRE" \
+                --arg msg "Touche ici pour ouvrir ta case du jour" \
+                --arg click "$SITE_URL/?jour=$JOUR" --arg attach "$IMG" \
+                '{topic:$topic,title:$title,message:$msg,click:$click,attach:$attach,filename:"case.jpg",priority:4}' > payload.json
+          cat payload.json
+          curl -sS --fail -H "Content-Type: application/json" -d @payload.json https://ntfy.sh/
