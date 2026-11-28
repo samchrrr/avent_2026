@@ -22,7 +22,7 @@ const MESSAGES = {
   4:  { texte: "Un bisou pour toi, parce que tu me manques même quand tu es là.", photo: "" },
   5:  { texte: "Une journée d'amour et d'eau fraîche… enfin surtout d'amour et d'huîtres !", photo: "" },
   6:  { texte: "Pas besoin de grand-chose pour être heureux : juste toi, moi et notre lit !", photo: "" },
-  7:  { texte: "J-18 avant Noël, mais… le meilleur cadeau est déjà à tes côtés !", photo: "" },
+  7:  { texte: "J-18 avant Noël, mais… le meilleur cadeau est déjà à mes côtés ...", photo: "" },
   8:  { texte: "Dernière ligne droite avant la liberté ! Courage ma chérie, après ça, place au repos, aux bisous et aux moments rien qu'à nous.", photo: "" },
   9:  { texte: "Home sweet home… surtout quand tu es là. Va jeter un petit coup d'œil sous le lit, une surprise t'y attend !", photo: "" },
   10: { texte: "Prépare ton estomac et ton plus beau sourire, ce soir c'est tartiflette, tv et amour à volonté !", photo: "" },
