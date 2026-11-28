@@ -35,7 +35,7 @@ const MESSAGES = {
   17: { texte: "Aujourd'hui, je dis OUI à presque tout ! Alors, profite-en bien… mais attention, les demandes abusives seront soumises à négociation !", photo: "" },
   18: { texte: "Ce soir, on fait fondre le fromage  Au programme : raclette, bisous et gros bidous bien remplis.", photo: "" },
   19: { texte: "Encore quelques jours avant Noël… Alors, dis-moi, quelle est la chose que tu aimerais absolument faire avec moi avant la fin de l'année ?", photo: "" },
-  20: { texte: "Merci d'être ma personne préférée.", photo: "" },
+  20: { texte: "Un dimanche avec toi, est un dimanche parfait.", photo: "" },
   21: { texte: "Petit rappel : parmi toutes les jolies choses de ma vie, tu es clairement ma préférée.", photo: "" },
   22: { texte: "Direction Bordeaux ! Enfile tes chaussures, prends ma main et prépare-toi à marcher… sauf si on trouve une terrasse sympa avant !", photo: "" },
   23: { texte: "Top départ du marathon des repas de Noël ! Au programme : manger, rire, se resservir… et regretter d'avoir autant mangé !", photo: "" },
