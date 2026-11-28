@@ -29,7 +29,7 @@ const MESSAGES = {
   11: { texte: "Avec toi, même quand il y a des jours de Dommage, je garde la tête Sur la lune, parce que notre histoire est ma plus belle Bienvenue chez moi.", photo: "" },
   12: { texte: "En route pour une petite escapade à deux, et c'est toi qui choisis la destination !", photo: "" },
   13: { texte: "Merci d'être ma personne préférée.", photo: "" },
-  14: { texte: "Livraison spéciale : plein de petits cœurs remplis d'amour, rien que pour toi !.", photo: "", coeurs: true },
+  14: { texte: "Livraison spéciale : des fleurs et plein de petits cœurs remplis d'amour, rien que pour toi !.", photo: "", coeurs: true },
   15: { texte: "Ce soir, tu n'as rien à faire, juste à te détendre… Je m'occupe du massage .", photo: "" },
   16: { texte: "Depuis notre Rencontre, ma vie a pris des airs de Mélodrama… Mais avec toi, même les petits drames deviennent de belles histoires, parce que tu rends chaque instant Sublime.", photo: "" },
   17: { texte: "Aujourd'hui, je dis OUI à presque tout ! Alors, profite-en bien… mais attention, les demandes abusives seront soumises à négociation !", photo: "" },
