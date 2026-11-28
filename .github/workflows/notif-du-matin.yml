@@ -2,9 +2,10 @@ name: Notif du matin
 
 on:
   schedule:
-    # 6h45 UTC = 7h45 à Paris en décembre. GitHub peut avoir quelques minutes de retard,
+    # 6h45 UTC = 7h45 à Paris. GitHub peut avoir quelques minutes de retard,
     # donc la notif arrive en général vers 8h.
-    - cron: "45 6 1-24 12 *"
+    - cron: "45 6 29,30 11 *"   # compte à rebours : J-2 et J-1
+    - cron: "45 6 1-24 12 *"    # les 24 cases
   workflow_dispatch:
     inputs:
       jour:
@@ -32,11 +33,33 @@ jobs:
           fi
           SITE_URL="${SITE_URL%/}"
 
+          envoyer() { # titre, message, lien, image (facultative)
+            jq -n --arg topic "$NTFY_TOPIC" --arg title "$1" --arg msg "$2" --arg click "$3" --arg attach "${4:-}" \
+              '{topic:$topic,title:$title,message:$msg,click:$click,priority:4}
+               + (if $attach != "" then {attach:$attach,filename:"case.jpg"} else {} end)' > payload.json
+            cat payload.json
+            curl -sS --fail -H "Content-Type: application/json" -d @payload.json https://ntfy.sh/
+          }
+
+          MOIS=$(TZ=Europe/Paris date +%-m); JOUR=$(TZ=Europe/Paris date +%-d)
+
+          # ---- Compte à rebours de fin novembre ----
+          if [ -z "${JOUR_MANUEL:-}" ] && [ "$MOIS" = "11" ]; then
+            case "$JOUR" in
+              29) envoyer "⏳ J-2 avant ton calendrier de l'Avent" \
+                          "Encore deux nuits… 24 lettres t'attendent sous leurs cachets de cire." "$SITE_URL/" ;;
+              30) envoyer "🌙 J-1 : demain, la première lettre" \
+                          "Dernière nuit avant d'ouvrir la case n°1. Fais de beaux rêves ♥" "$SITE_URL/" ;;
+              *)  echo "Rien à envoyer aujourd'hui" ;;
+            esac
+            exit 0
+          fi
+
+          # ---- Les 24 cases ----
           if [ -n "${JOUR_MANUEL:-}" ]; then
             JOUR="$JOUR_MANUEL"
-          else
-            MOIS=$(TZ=Europe/Paris date +%-m); JOUR=$(TZ=Europe/Paris date +%-d)
-            if [ "$MOIS" != "12" ] || [ "$JOUR" -gt 24 ]; then echo "Pas de case aujourd'hui"; exit 0; fi
+          elif [ "$MOIS" != "12" ] || [ "$JOUR" -gt 24 ]; then
+            echo "Pas de case aujourd'hui"; exit 0
           fi
 
           TITRES=(
@@ -51,10 +74,4 @@ jobs:
             TITRE=$(printf "${TITRES[$(( JOUR % ${#TITRES[@]} ))]}" "$JOUR")
           fi
           IMG=$(printf "%s/notif/jour-%02d.jpg" "$SITE_URL" "$JOUR")
-
-          jq -n --arg topic "$NTFY_TOPIC" --arg title "$TITRE" \
-                --arg msg "Touche ici pour ouvrir ta case du jour" \
-                --arg click "$SITE_URL/?jour=$JOUR" --arg attach "$IMG" \
-                '{topic:$topic,title:$title,message:$msg,click:$click,attach:$attach,filename:"case.jpg",priority:4}' > payload.json
-          cat payload.json
-          curl -sS --fail -H "Content-Type: application/json" -d @payload.json https://ntfy.sh/
+          envoyer "$TITRE" "Touche ici pour ouvrir ta case du jour" "$SITE_URL/?jour=$JOUR" "$IMG"
